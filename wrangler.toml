@@ -1,0 +1,33 @@
+# =============================================================================
+# VICTORIX 3.0 CLOUDFLARE CONFIGURATION
+# Free-Tier Architecture: Pages (Static Public Site) + Worker Cron + D1 + KV
+# =============================================================================
+
+name = "victorix-automation-worker"
+main = "worker/cron-worker.ts"
+compatibility_date = "2026-01-01"
+
+# Static Public Site Output (for Cloudflare Pages Free deployments)
+pages_build_output_dir = "dist"
+
+# -----------------------------------------------------------------------------
+# PRIVATE AUTOMATION STORAGE BINDINGS (Free Tier)
+# Client-facing static websites MUST NOT bind D1 or KV.
+# -----------------------------------------------------------------------------
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "victorix-automation-db"
+# database_id = "REPLACE_WITH_YOUR_CLOUDFLARE_D1_DATABASE_ID"
+# migrations_dir = "migrations"
+
+# [[kv_namespaces]]
+# binding = "KV"
+# id = "REPLACE_WITH_YOUR_CLOUDFLARE_KV_NAMESPACE_ID"
+
+# -----------------------------------------------------------------------------
+# OPTIONAL CLOUDFLARE CRON TRIGGER (Alternative to GitHub Actions)
+# IMPORTANT: Do NOT enable both Cloudflare Cron Triggers and GitHub Actions
+# scheduled cron simultaneously for the same tasks!
+# -----------------------------------------------------------------------------
+# [triggers]
+# crons = ["*/15 * * * *"]

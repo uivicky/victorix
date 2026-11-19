@@ -1,0 +1,73 @@
+name: VICTORIX 15-Minute Discovery & Job Automation
+
+# Runs every 15 minutes on GitHub Actions Free Tier (and supports manual workflow_dispatch).
+# Note: GitHub scheduled crons may experience short queue delays; exact-minute execution is not guaranteed.
+# IMPORTANT: Do not run Cloudflare Worker Cron Triggers simultaneously if this schedule is enabled.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Discovery mode (full | business | jobs)'
+        required: false
+        default: 'full'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: victorix-automation-runner
+  cancel-in-progress: false
+
+jobs:
+  execute-automation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger VICTORIX Automation Runner
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          DISCOVERY_MODE: ${{ github.event.inputs.mode || 'full' }}
+        run: |
+          if [ -z "$APP_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "ERROR: APP_URL and CRON_SECRET repository secrets must be configured."
+            exit 1
+          fi
+
+          TARGET_URL="${APP_URL%/}/api/discovery/trigger"
+          echo "Starting scheduled automation check (mode: $DISCOVERY_MODE)..."
+
+          HTTP_CODE=$(curl -sS -o response_body.json -w "%{http_code}" \
+            -X POST "$TARGET_URL" \
+            -H "Content-Type: application/json" \
+            -H "x-cron-secret: $CRON_SECRET" \
+            -H "x-scheduler-source: github_actions" \
+            -d "{\"mode\":\"$DISCOVERY_MODE\",\"triggerType\":\"github_actions\"}" \
+            --max-time 45)
+
+          echo "HTTP Response Status: $HTTP_CODE"
+          # Only print sanitized execution summary to keep private business/job records out of logs
+          node -e "
+            const fs = require('fs');
+            try {
+              const data = JSON.parse(fs.readFileSync('response_body.json', 'utf8'));
+              console.log(JSON.stringify({
+                success: data.success,
+                status: data.run?.status || data.status,
+                businessAdded: data.run?.businessAdded ?? 0,
+                jobsAdded: data.run?.jobsAdded ?? 0,
+                skipped: data.skipped || false,
+                reason: data.reason || null
+              }));
+            } catch (e) {
+              console.log('Non-JSON response received');
+            }
+          "
+
+          if [ "$HTTP_CODE" -ge 400 ]; then
+            echo "Automation request failed with status $HTTP_CODE"
+            exit 1
+          fi
