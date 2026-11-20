@@ -35,7 +35,7 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
     provider: {
       '@type': 'Organization',
       name: 'VICTORIX',
-      url: 'https://victorix.in',
+      url: 'https://victorixglobal.vercel.app',
     },
     description: service.fullDesc,
     areaServed: {

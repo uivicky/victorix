@@ -29,7 +29,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onBack }) => {
       <header className="space-y-3 border-b border-white/10 pb-6">
         <span className="text-xs font-mono uppercase text-[#B68AFF]">Legal &amp; Compliance</span>
         <h1 className="text-3xl sm:text-5xl font-display font-bold text-white">Terms &amp; Conditions</h1>
-        <p className="text-xs text-gray-400">Effective Date: January 1, 2025 • Planned Domain: victorix.in</p>
+        <p className="text-xs text-gray-400">Effective Date: January 1, 2025 • Website Domain: victorixglobal.vercel.app</p>
       </header>
 
       <div className="space-y-8 text-gray-300 text-xs sm:text-sm leading-relaxed">

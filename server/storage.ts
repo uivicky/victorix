@@ -541,17 +541,17 @@ function getInitialDb(): DbState {
       {
         id: 'seo-rec-1',
         severity: 'warning',
-        url: 'https://victorix.in/',
-        title: 'Verify Google Search Console TXT Record',
+        url: 'https://victorixglobal.vercel.app/',
+        title: 'Verify Google Search Console Property',
         explanation:
-          'Google Search Console API requires domain verification before organic clicks, impressions, and average positions can be fetched.',
-        fix: 'Add TXT verification record to victorix.in DNS and configure GOOGLE_SEARCH_CONSOLE_KEY.',
+          'Google Search Console API requires property verification before organic clicks, impressions, and average positions can be fetched.',
+        fix: 'Verify https://victorixglobal.vercel.app via HTML meta verification tag and configure GOOGLE_SEARCH_CONSOLE_KEY.',
         status: 'open',
       },
       {
         id: 'seo-rec-2',
         severity: 'optimization',
-        url: 'https://victorix.in/website-developer-mumbai',
+        url: 'https://victorixglobal.vercel.app/website-developer-mumbai',
         title: 'Monitor Local Mumbai Landing Page Core Web Vitals',
         explanation:
           'Ensure LCP stays under 2.5s and CLS stays under 0.1 via PageSpeed Insights testing.',
@@ -1050,7 +1050,7 @@ export class StorageManager {
         unit: 'API checks/day',
         warningThresholdPct: 80,
         fallbackBehavior: 'Uses local HTTP route SEO validation; never fabricates search clicks/impressions.',
-        setupGuide: 'Verify victorix.in in Search Console and set GOOGLE_SEARCH_CONSOLE_KEY / GA4_MEASUREMENT_ID.',
+        setupGuide: 'Verify https://victorixglobal.vercel.app in Search Console and set GOOGLE_SEARCH_CONSOLE_KEY / GA4_MEASUREMENT_ID.',
       },
     ];
   }

@@ -12,7 +12,7 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack }) 
     <div className="py-16 sm:py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
       <SEOHead
         title="Privacy Policy – VICTORIX"
-        description="Privacy policy and data retention practices of VICTORIX for victorix.in."
+        description="Privacy policy and data retention practices of VICTORIX for victorixglobal.vercel.app."
         canonicalPath="/privacy-policy"
       />
 
@@ -29,14 +29,14 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack }) 
       <header className="space-y-3 border-b border-white/10 pb-6">
         <span className="text-xs font-mono uppercase text-[#B68AFF]">Legal &amp; Compliance</span>
         <h1 className="text-3xl sm:text-5xl font-display font-bold text-white">Privacy Policy</h1>
-        <p className="text-xs text-gray-400">Effective Date: January 1, 2025 • Planned Domain: victorix.in</p>
+        <p className="text-xs text-gray-400">Effective Date: January 1, 2025 • Website Domain: victorixglobal.vercel.app</p>
       </header>
 
       <div className="space-y-8 text-gray-300 text-xs sm:text-sm leading-relaxed">
         <section className="space-y-3">
           <h2 className="text-xl font-display font-bold text-white">1. Overview</h2>
           <p>
-            VICTORIX (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;), founded by Vicky Vishwakarma and operating from Mumbai, India, is committed to safeguarding your privacy. This Privacy Policy outlines how we collect, store, and utilize information when you browse our website (victorix.in) or initiate communication through our official WhatsApp channels.
+            VICTORIX (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;), founded by Vicky Vishwakarma and operating from Mumbai, India, is committed to safeguarding your privacy. This Privacy Policy outlines how we collect, store, and utilize information when you browse our website (victorixglobal.vercel.app) or initiate communication through our official WhatsApp channels.
           </p>
         </section>
 

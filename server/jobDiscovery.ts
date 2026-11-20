@@ -184,7 +184,7 @@ async function politeFetch(url: string, accept = 'application/json', timeoutMs =
     return await fetch(url, {
       method: 'GET',
       headers: {
-        'User-Agent': 'VICTORIX-GlobalJobHunter/3.0 (+https://victorix.in; permitted-feed-reader)',
+        'User-Agent': 'VICTORIX-GlobalJobHunter/3.0 (+https://victorixglobal.vercel.app; permitted-feed-reader)',
         Accept: accept,
       },
       signal: controller.signal,

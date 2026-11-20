@@ -48,11 +48,20 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       ogTypeEl.setAttribute('content', ogType);
     }
 
-    // Dynamic Canonical
-    const currentUrl = `https://victorix.in${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`;
+    // Dynamic Canonical & OG URL
+    const normalizedPath = canonicalPath
+      ? canonicalPath.startsWith('/')
+        ? canonicalPath
+        : `/${canonicalPath}`
+      : '/';
+    const currentUrl = `https://victorixglobal.vercel.app${normalizedPath}`;
     let canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) {
       canonical.setAttribute('href', currentUrl);
+    }
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) {
+      ogUrl.setAttribute('content', currentUrl);
     }
 
     // Dynamic JSON-LD Schema if provided

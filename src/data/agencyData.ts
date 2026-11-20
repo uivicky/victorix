@@ -6,8 +6,8 @@ export const BRAND_INFO = {
   founder: 'Vicky Vishwakarma',
   whatsappNumber: '+91 6387661594',
   whatsappUrl: 'https://wa.me/916387661594',
-  plannedDomain: 'victorix.in',
-  siteUrl: 'https://victorix.in',
+  plannedDomain: 'victorixglobal.vercel.app',
+  siteUrl: 'https://victorixglobal.vercel.app',
   location: 'Mumbai, India',
 };
 

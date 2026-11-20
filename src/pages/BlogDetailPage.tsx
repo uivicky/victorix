@@ -59,11 +59,11 @@ export const BlogDetailPage: React.FC<BlogDetailPageProps> = ({
     publisher: {
       '@type': 'Organization',
       name: 'VICTORIX',
-      url: 'https://victorix.in',
+      url: 'https://victorixglobal.vercel.app',
     },
     datePublished: '2025-01-15T08:00:00+05:30',
     dateModified: post.updatedAt || '2025-03-01T10:00:00+05:30',
-    mainEntityOfPage: `https://victorix.in/blog/${post.slug}`,
+    mainEntityOfPage: `https://victorixglobal.vercel.app/blog/${post.slug}`,
   };
 
   const relatedPosts = posts.filter((p) => p.slug !== post.slug).slice(0, 2);

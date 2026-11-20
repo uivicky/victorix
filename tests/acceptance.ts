@@ -53,15 +53,38 @@ async function runAcceptanceTests() {
     assert.strictEqual(vercelConfig.outputDirectory, 'dist');
     assert(fs.existsSync(path.join(process.cwd(), 'api/[...route].ts')), 'Missing Vercel api/[...route].ts entrypoint');
 
+    const homeHtml = await homeRes.text();
+    assert(
+      homeHtml.includes('bwGlwapRk92lYE5W1wl1o7izJcBKOWUYJJMSktniLyE'),
+      'Google Search Console verification meta tag must be present in HTML'
+    );
+    assert(
+      homeHtml.includes('https://victorixglobal.vercel.app') && !homeHtml.includes('victorix.in'),
+      'Home HTML canonical/schema must use https://victorixglobal.vercel.app exclusively'
+    );
+
     const sitemapText = await sitemapRes.text();
+    const apiSitemapText = await apiSitemapRes.text();
     assert(
       sitemapText.includes('<urlset') &&
-        sitemapText.includes('/pricing') &&
-        sitemapText.includes('/website-developer-mumbai') &&
-        sitemapText.includes('/portfolio/it-support')
+        sitemapText.includes('https://victorixglobal.vercel.app/pricing') &&
+        sitemapText.includes('https://victorixglobal.vercel.app/website-developer-mumbai') &&
+        sitemapText.includes('https://victorixglobal.vercel.app/portfolio/it-support')
     );
+    assert(!sitemapText.includes('victorix.in') && !apiSitemapText.includes('victorix.in'), 'Sitemap must NOT reference victorix.in');
+    const locMatches = [...sitemapText.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
+    assert(locMatches.length >= 19, `Expected >= 19 sitemap <loc> entries, got ${locMatches.length}`);
+    for (const loc of locMatches) {
+      assert(loc.startsWith('https://victorixglobal.vercel.app/'), `Unexpected sitemap URL host: ${loc}`);
+    }
+
     const robotsText = await robotsRes.text();
-    assert(robotsText.includes('Disallow: /admin') && robotsText.includes('Disallow: /api/'));
+    assert(
+      robotsText.includes('Disallow: /admin') &&
+        robotsText.includes('Disallow: /api/') &&
+        robotsText.includes('Sitemap: https://victorixglobal.vercel.app/sitemap.xml') &&
+        !robotsText.includes('victorix.in')
+    );
     const blogsJson: any = await blogsRes.json();
     assert(blogsJson.success && Array.isArray(blogsJson.blogs) && blogsJson.blogs.length >= 1);
     record(

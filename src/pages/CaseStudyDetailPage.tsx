@@ -40,9 +40,9 @@ export const CaseStudyDetailPage: React.FC<CaseStudyDetailPageProps> = ({
     author: {
       '@type': 'Organization',
       name: 'VICTORIX',
-      url: 'https://victorix.in',
+      url: 'https://victorixglobal.vercel.app',
     },
-    url: `https://victorix.in/portfolio/${project.slug}`,
+    url: `https://victorixglobal.vercel.app/portfolio/${project.slug}`,
     description: project.summary,
   };
 

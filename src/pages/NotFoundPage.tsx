@@ -12,7 +12,7 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({ onNavigate }) => {
     <div className="min-h-[75vh] flex items-center justify-center px-4 py-20 text-center">
       <SEOHead
         title="Page Not Found (404) – VICTORIX"
-        description="The requested page could not be found on victorix.in. Explore our web development services, real portfolio case studies, or chat on WhatsApp."
+        description="The requested page could not be found on victorixglobal.vercel.app. Explore our web development services, real portfolio case studies, or chat on WhatsApp."
         canonicalPath="/404"
       />
 

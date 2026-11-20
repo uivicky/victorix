@@ -18,13 +18,13 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, onNavigate }) => 
       '@type': 'ListItem',
       position: 1,
       name: 'Home',
-      item: 'https://victorix.in',
+      item: 'https://victorixglobal.vercel.app',
     },
     ...items.map((item, idx) => ({
       '@type': 'ListItem',
       position: idx + 2,
       name: item.label,
-      item: item.path ? `https://victorix.in${item.path.startsWith('/') ? item.path : `/${item.path}`}` : undefined,
+      item: item.path ? `https://victorixglobal.vercel.app${item.path.startsWith('/') ? item.path : `/${item.path}`}` : undefined,
     })),
   ];
 

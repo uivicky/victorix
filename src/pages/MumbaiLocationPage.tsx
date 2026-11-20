@@ -23,9 +23,9 @@ export const MumbaiLocationPage: React.FC<MumbaiLocationPageProps> = ({ onNaviga
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
     name: 'VICTORIX – Website Development Mumbai',
-    image: 'https://victorix.in/logo.svg',
-    '@id': 'https://victorix.in/#mumbai-service',
-    url: 'https://victorix.in/website-developer-mumbai',
+    image: 'https://victorixglobal.vercel.app/logo.svg',
+    '@id': 'https://victorixglobal.vercel.app/#mumbai-service',
+    url: 'https://victorixglobal.vercel.app/website-developer-mumbai',
     telephone: '+91-6387661594',
     priceRange: '₹5,999 - ₹45,000',
     address: {

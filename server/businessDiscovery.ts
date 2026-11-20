@@ -113,7 +113,7 @@ out center 15;
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'User-Agent': 'VICTORIX-ClientHunter/3.0 (+https://victorix.in)',
+          'User-Agent': 'VICTORIX-ClientHunter/3.0 (+https://victorixglobal.vercel.app)',
         },
         body: `data=${encodeURIComponent(query)}`,
         signal: controller.signal,

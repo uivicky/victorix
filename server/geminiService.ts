@@ -43,7 +43,7 @@ export async function generateAiProposal(lead: {
   if (ai) {
     try {
       storage.state.quotas.geminiRequestsToday += 1;
-      const prompt = `You are Vicky Vishwakarma, founder of VICTORIX, a digital agency in Mumbai (domain: victorix.in, WhatsApp: +91 6387661594).
+      const prompt = `You are Vicky Vishwakarma, founder of VICTORIX, a digital agency in Mumbai (domain: victorixglobal.vercel.app, WhatsApp: +91 6387661594).
 Draft a concise, strictly honest, non-spammy proposal for:
 Business Name: ${lead.businessName}
 Category: ${lead.category}
@@ -205,7 +205,7 @@ export async function generateBlogAiDraft(
   if (ai) {
     try {
       storage.state.quotas.geminiRequestsToday += 1;
-      const prompt = `You are Vicky Vishwakarma, founder of VICTORIX (https://victorix.in). Write a practical engineering & SEO article.
+      const prompt = `You are Vicky Vishwakarma, founder of VICTORIX (https://victorixglobal.vercel.app). Write a practical engineering & SEO article.
 Topic: ${topic}
 Keywords: ${targetKeywords || 'website developer in Mumbai'}
 Category: ${category || 'Guides'}

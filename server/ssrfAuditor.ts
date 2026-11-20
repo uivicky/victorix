@@ -177,7 +177,7 @@ export async function safeFetchWithRedirectRevalidation(
         method,
         redirect: 'manual',
         headers: {
-          'User-Agent': 'VICTORIX-SafeAuditor/3.0 (+https://victorix.in; read-only SEO/tech audit)',
+          'User-Agent': 'VICTORIX-SafeAuditor/3.0 (+https://victorixglobal.vercel.app; read-only SEO/tech audit)',
           Accept: 'text/html,application/xhtml+xml,text/plain;q=0.9',
         },
         signal: controller.signal,

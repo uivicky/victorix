@@ -1385,13 +1385,13 @@ app.get('/api/admin/seo', requireAdminAuth, (_req: Request, res: Response) => {
   const ga4Configured = Boolean(process.env.GA4_MEASUREMENT_ID && process.env.GA4_MEASUREMENT_ID.trim());
 
   const pagesAudited = [
-    { url: 'https://victorix.in/', title: 'VICTORIX – Professional Website Development That Helps Your Business Grow', h1Count: 1, canonical: true, schema: true, status: 'pass' },
-    { url: 'https://victorix.in/website-developer-mumbai', title: 'Website Developer in Mumbai – Fast, Custom Web Development | VICTORIX', h1Count: 1, canonical: true, schema: true, status: 'pass' },
-    { url: 'https://victorix.in/services', title: 'Web Development Services – Custom Websites, Ecommerce & AI', h1Count: 1, canonical: true, schema: true, status: 'pass' },
-    { url: 'https://victorix.in/portfolio', title: 'Portfolio & Case Studies – Real Live Projects by VICTORIX', h1Count: 1, canonical: true, schema: true, status: 'pass' },
-    { url: 'https://victorix.in/pricing', title: 'Transparent Website Development Pricing – VICTORIX (From ₹5,999)', h1Count: 1, canonical: true, schema: true, status: 'pass' },
-    { url: 'https://victorix.in/blog', title: 'Engineering & SEO Blog – Web Development Guides & Cost Analysis', h1Count: 1, canonical: true, schema: true, status: 'pass' },
-    { url: 'https://victorix.in/contact', title: 'Contact VICTORIX – Official WhatsApp Channel', h1Count: 1, canonical: true, schema: true, status: 'pass' },
+    { url: 'https://victorixglobal.vercel.app/', title: 'VICTORIX – Professional Website Development That Helps Your Business Grow', h1Count: 1, canonical: true, schema: true, status: 'pass' },
+    { url: 'https://victorixglobal.vercel.app/website-developer-mumbai', title: 'Website Developer in Mumbai – Fast, Custom Web Development | VICTORIX', h1Count: 1, canonical: true, schema: true, status: 'pass' },
+    { url: 'https://victorixglobal.vercel.app/services', title: 'Web Development Services – Custom Websites, Ecommerce & AI', h1Count: 1, canonical: true, schema: true, status: 'pass' },
+    { url: 'https://victorixglobal.vercel.app/portfolio', title: 'Portfolio & Case Studies – Real Live Projects by VICTORIX', h1Count: 1, canonical: true, schema: true, status: 'pass' },
+    { url: 'https://victorixglobal.vercel.app/pricing', title: 'Transparent Website Development Pricing – VICTORIX (From ₹5,999)', h1Count: 1, canonical: true, schema: true, status: 'pass' },
+    { url: 'https://victorixglobal.vercel.app/blog', title: 'Engineering & SEO Blog – Web Development Guides & Cost Analysis', h1Count: 1, canonical: true, schema: true, status: 'pass' },
+    { url: 'https://victorixglobal.vercel.app/contact', title: 'Contact VICTORIX – Official WhatsApp Channel', h1Count: 1, canonical: true, schema: true, status: 'pass' },
   ];
 
   res.json({
@@ -1416,12 +1416,12 @@ app.get('/api/admin/seo', requireAdminAuth, (_req: Request, res: Response) => {
     pagesAudited,
     pageSpeedHistory: storage.state.seoReportsHistory.slice(0, 15),
     sitemapStatus: {
-      url: 'https://victorix.in/sitemap.xml',
+      url: 'https://victorixglobal.vercel.app/sitemap.xml',
       valid: true,
       routesCount: 19 + storage.state.blogs.filter((b) => b.status === 'published').length,
     },
     robotsStatus: {
-      url: 'https://victorix.in/robots.txt',
+      url: 'https://victorixglobal.vercel.app/robots.txt',
       valid: true,
       adminProtected: true,
     },
@@ -1538,7 +1538,7 @@ app.post('/api/enquiries', rateLimiter(20, 60000), (req: Request, res: Response)
   storage.state.enquiries.unshift(newEnquiry);
   storage.save();
 
-  const messageText = `Hi Vicky, I submitted a project brief on victorix.in.\n\nName: ${newEnquiry.name}\nWhatsApp: ${newEnquiry.phone}\nService: ${newEnquiry.service}\nTimeline: ${newEnquiry.timeline}\nDetails: ${newEnquiry.projectDetails || 'Discussing new website'}`;
+  const messageText = `Hi Vicky, I submitted a project brief on victorixglobal.vercel.app.\n\nName: ${newEnquiry.name}\nWhatsApp: ${newEnquiry.phone}\nService: ${newEnquiry.service}\nTimeline: ${newEnquiry.timeline}\nDetails: ${newEnquiry.projectDetails || 'Discussing new website'}`;
   const whatsappUrl = `https://wa.me/916387661594?text=${encodeURIComponent(messageText)}`;
 
   res.json({ success: true, enquiry: newEnquiry, whatsappUrl });
@@ -1564,7 +1564,7 @@ app.patch('/api/enquiries/:id', requireAdminAuth, (req: Request, res: Response) 
 // 11. DYNAMIC XML SITEMAP & ROBOTS.TXT
 // ---------------------------------------------------------------------------
 app.get(['/sitemap.xml', '/api/sitemap'], (_req: Request, res: Response) => {
-  const domain = 'https://victorix.in';
+  const domain = 'https://victorixglobal.vercel.app';
   const urls = [
     { loc: `${domain}/`, priority: '1.0', changefreq: 'weekly' },
     { loc: `${domain}/about`, priority: '0.9', changefreq: 'monthly' },
@@ -1620,7 +1620,7 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://victorix.in/sitemap.xml
+Sitemap: https://victorixglobal.vercel.app/sitemap.xml
 `);
 });
 
