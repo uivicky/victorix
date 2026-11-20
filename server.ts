@@ -50,6 +50,13 @@ app.set('trust proxy', 1);
 const PORT = Number(process.env.PORT) || 3000;
 const IS_PROD = process.env.NODE_ENV === 'production';
 
+app.use((req: Request, _res: Response, next: NextFunction) => {
+  if ((req as any).body !== undefined && typeof (req as any).body === 'object' && !(req as any)._body) {
+    (req as any)._body = true;
+  }
+  next();
+});
+
 app.use(express.json({ limit: '2mb' }));
 
 // Security Headers Middleware

@@ -2,22 +2,29 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api",
-      "destination": "/api/health"
+      "src": "/sitemap.xml",
+      "dest": "/api/[...route]?__vercel_path=/sitemap.xml"
     },
     {
-      "source": "/sitemap.xml",
-      "destination": "/api/sitemap"
+      "src": "/robots.txt",
+      "dest": "/api/[...route]?__vercel_path=/robots.txt"
     },
     {
-      "source": "/robots.txt",
-      "destination": "/api/robots"
+      "src": "/api",
+      "dest": "/api/[...route]?__vercel_path=/api/health"
     },
     {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
+      "src": "/api/(.*)",
+      "dest": "/api/[...route]?__vercel_path=/api/$1"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
