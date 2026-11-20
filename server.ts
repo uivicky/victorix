@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -91,8 +90,17 @@ function csvCell(val: unknown): string {
 }
 
 // ---------------------------------------------------------------------------
-// 2. STATELESS ADMIN AUTHENTICATION ENDPOINTS (Signed HttpOnly Cookies)
+// 2. HEALTH & STATELESS ADMIN AUTHENTICATION ENDPOINTS (Signed HttpOnly Cookies)
 // ---------------------------------------------------------------------------
+app.get('/api/health', (_req: Request, res: Response) => {
+  const cfg = getAuthConfig();
+  res.json({
+    ok: true,
+    service: 'victorix-api',
+    authConfigured: cfg.configured,
+    missingAuthEnv: cfg.missingKeys,
+  });
+});
 app.post('/api/admin/login', rateLimiter(10, 60000), (req: Request, res: Response) => {
   res.setHeader('Cache-Control', 'no-store');
   const cfg = getAuthConfig();
@@ -1548,7 +1556,7 @@ app.patch('/api/enquiries/:id', requireAdminAuth, (req: Request, res: Response) 
 // ---------------------------------------------------------------------------
 // 11. DYNAMIC XML SITEMAP & ROBOTS.TXT
 // ---------------------------------------------------------------------------
-app.get('/sitemap.xml', (_req: Request, res: Response) => {
+app.get(['/sitemap.xml', '/api/sitemap'], (_req: Request, res: Response) => {
   const domain = 'https://victorix.in';
   const urls = [
     { loc: `${domain}/`, priority: '1.0', changefreq: 'weekly' },
@@ -1598,7 +1606,7 @@ ${urls
   res.send(xml);
 });
 
-app.get('/robots.txt', (_req: Request, res: Response) => {
+app.get(['/robots.txt', '/api/robots'], (_req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/plain');
   res.send(`User-agent: *
 Allow: /
@@ -1609,20 +1617,17 @@ Sitemap: https://victorix.in/sitemap.xml
 `);
 });
 
-// Optional local-server 15-minute scheduler ONLY when user explicitly selects 'local_server'
-setInterval(() => {
-  if (storage.state.userSettings.activeScheduler === 'local_server') {
-    executeAutomationWorkflow({ triggerType: 'local_server', mode: 'full' }).catch((err) => {
-      console.error('Local scheduler cycle error:', err);
-    });
-  }
-}, 15 * 60 * 1000);
+// Ensure unmatched /api/* routes always return structured JSON (never HTML fallback)
+app.all('/api/*', (req: Request, res: Response) => {
+  res.status(404).json({ error: `API route not found: ${req.method} ${req.path}` });
+});
 
 // ---------------------------------------------------------------------------
-// 12. VITE DEV MIDDLEWARE OR PRODUCTION STATIC SERVE
+// 12. VITE DEV MIDDLEWARE OR PRODUCTION STATIC SERVE (Skipped in Vercel Serverless)
 // ---------------------------------------------------------------------------
 async function startServer() {
   if (!IS_PROD) {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
@@ -1640,4 +1645,26 @@ async function startServer() {
   });
 }
 
-startServer();
+const entryPath = (process.argv[1] || '').replace(/\\/g, '/');
+const isServerEntry =
+  !process.env.VERCEL &&
+  (entryPath.endsWith('/server.ts') ||
+    entryPath.endsWith('/server.js') ||
+    entryPath === 'server.ts' ||
+    entryPath === 'server.js');
+
+if (isServerEntry) {
+  // Optional local-server 15-minute scheduler ONLY when explicitly running standalone server
+  setInterval(() => {
+    if (storage.state.userSettings.activeScheduler === 'local_server') {
+      executeAutomationWorkflow({ triggerType: 'local_server', mode: 'full' }).catch((err) => {
+        console.error('Local scheduler cycle error:', err);
+      });
+    }
+  }, 15 * 60 * 1000);
+
+  startServer();
+}
+
+export { app };
+export default app;

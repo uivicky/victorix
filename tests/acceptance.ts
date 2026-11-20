@@ -23,16 +23,36 @@ async function runAcceptanceTests() {
     console.log(`[${status}] ${name}: ${detail}`);
   }
 
-  // 1. Public Routes & SEO Checks
+  // 1. Public Routes, Vercel Serverless Config & SEO Checks
   try {
-    const [homeRes, sitemapRes, robotsRes, blogsRes] = await Promise.all([
-      fetch(`${BASE}/`),
-      fetch(`${BASE}/sitemap.xml`),
-      fetch(`${BASE}/robots.txt`),
-      fetch(`${BASE}/api/blogs`),
-    ]);
+    const [homeRes, sitemapRes, apiSitemapRes, robotsRes, apiRobotsRes, blogsRes, healthRes, missingApiRes] =
+      await Promise.all([
+        fetch(`${BASE}/`),
+        fetch(`${BASE}/sitemap.xml`),
+        fetch(`${BASE}/api/sitemap`),
+        fetch(`${BASE}/robots.txt`),
+        fetch(`${BASE}/api/robots`),
+        fetch(`${BASE}/api/blogs`),
+        fetch(`${BASE}/api/health`),
+        fetch(`${BASE}/api/nonexistent-route-check`),
+      ]);
     assert.strictEqual(homeRes.status, 200);
     assert.strictEqual(sitemapRes.status, 200);
+    assert.strictEqual(apiSitemapRes.status, 200);
+    assert.strictEqual(apiRobotsRes.status, 200);
+    const healthJson: any = await healthRes.json();
+    assert.strictEqual(healthRes.status, 200);
+    assert.strictEqual(healthJson.ok, true);
+    assert.strictEqual(healthJson.authConfigured, true);
+
+    assert.strictEqual(missingApiRes.status, 404);
+    const missingApiJson: any = await missingApiRes.json();
+    assert(missingApiJson.error, 'Unmatched /api/* route must return structured JSON 404');
+
+    const vercelConfig = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'vercel.json'), 'utf-8'));
+    assert.strictEqual(vercelConfig.outputDirectory, 'dist');
+    assert(fs.existsSync(path.join(process.cwd(), 'api/[...route].ts')), 'Missing Vercel api/[...route].ts entrypoint');
+
     const sitemapText = await sitemapRes.text();
     assert(
       sitemapText.includes('<urlset') &&
@@ -44,9 +64,13 @@ async function runAcceptanceTests() {
     assert(robotsText.includes('Disallow: /admin') && robotsText.includes('Disallow: /api/'));
     const blogsJson: any = await blogsRes.json();
     assert(blogsJson.success && Array.isArray(blogsJson.blogs) && blogsJson.blogs.length >= 1);
-    record('Public Routes, Sitemap, Robots & Blogs', 'PASS', `HTTP 200 across all public endpoints; ${blogsJson.blogs.length} blogs published.`);
+    record(
+      'Public Routes, Vercel Config, Sitemap, Robots & Health',
+      'PASS',
+      `HTTP 200 across public & API health/SEO endpoints, JSON 404 verified, vercel.json & api/[...route].ts present; ${blogsJson.blogs.length} blogs published.`
+    );
   } catch (err: any) {
-    record('Public Routes, Sitemap, Robots & Blogs', 'FAIL', err.message);
+    record('Public Routes, Vercel Config, Sitemap, Robots & Health', 'FAIL', err.message);
   }
 
   // 2. Stateless Signed HttpOnly Cookie Auth, Invalid Password, Tampering & Expiration
@@ -109,13 +133,15 @@ async function runAcceptanceTests() {
 
     sessionCookie = setCookieHeader.split(';')[0];
 
-    // 2e. Verify GET /api/admin/session succeeds with signed cookie
-    const sessRes = await fetch(`${BASE}/api/admin/session`, {
-      headers: { Cookie: sessionCookie },
-    });
-    const sessJson: any = await sessRes.json();
-    assert.strictEqual(sessJson.authenticated, true);
-    assert.strictEqual(sessJson.configured, true);
+    // 2e. Verify GET /api/admin/session persists across reloads with signed cookie
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const sessRes = await fetch(`${BASE}/api/admin/session`, {
+        headers: { Cookie: sessionCookie },
+      });
+      const sessJson: any = await sessRes.json();
+      assert.strictEqual(sessJson.authenticated, true);
+      assert.strictEqual(sessJson.configured, true);
+    }
 
     // 2f. Forged/tampered cookie must fail with 401
     const tamperedCookie = `${sessionCookie.slice(0, -4)}AAAA`;

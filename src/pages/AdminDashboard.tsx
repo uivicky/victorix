@@ -95,6 +95,16 @@ export const AdminDashboard: React.FC = () => {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [enquiries, setEnquiries] = useState<any[]>([]);
 
+  const parseJsonSafe = async (res: Response): Promise<any> => {
+    const text = await res.text();
+    if (!text) return null;
+    try {
+      return JSON.parse(text);
+    } catch {
+      return null;
+    }
+  };
+
   const authFetch = useCallback(async (url: string, options: RequestInit = {}) => {
     const res = await fetch(url, {
       ...options,
@@ -117,20 +127,30 @@ export const AdminDashboard: React.FC = () => {
         credentials: 'include',
         cache: 'no-store',
       });
-      const data = await res.json();
+      const data = await parseJsonSafe(res);
+      if (!data) {
+        setAuthConfigured(false);
+        setIsAuthenticated(false);
+        setAuthError(
+          `Admin session API (/api/admin/session) returned HTTP ${res.status} without JSON. Check API deployment routing.`
+        );
+        return;
+      }
       if (data.configured === false) {
         setAuthConfigured(false);
         setIsAuthenticated(false);
         setAuthError(
           data.error ||
-            'Admin authentication is not configured. Check server environment variables.'
+            'Admin authentication is not configured on the server. Add the required admin auth environment variables and redeploy.'
         );
       } else {
         setAuthConfigured(true);
+        setAuthError('');
         setIsAuthenticated(Boolean(data.authenticated));
       }
     } catch {
       setIsAuthenticated(false);
+      setAuthError('Unable to reach /api/admin/session. Check server status or network connection.');
     } finally {
       setCheckingSession(false);
     }
@@ -229,16 +249,26 @@ export const AdminDashboard: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ passphrase: authPassphraseInput }),
       });
-      const data = await res.json();
-      if (res.ok && data.success && data.authenticated) {
+      const data = await parseJsonSafe(res);
+      if (res.ok && data?.success && data?.authenticated) {
         setIsAuthenticated(true);
         setAuthConfigured(true);
         setAuthPassphraseInput('');
+      } else if (res.status === 503) {
+        setAuthConfigured(false);
+        setAuthError(
+          data?.error ||
+            'Server authentication is not configured. Add the required admin auth environment variables and redeploy.'
+        );
+      } else if (!data) {
+        setAuthError(
+          `Login endpoint (/api/admin/login) returned HTTP ${res.status}. Verify serverless API routing.`
+        );
       } else {
         setAuthError(data.error || 'Authentication failed.');
       }
     } catch {
-      setAuthError('Connection error during login.');
+      setAuthError('Network error while contacting /api/admin/login. Verify the API server is running.');
     } finally {
       setAuthLoading(false);
     }
@@ -315,8 +345,21 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
-            {authError && (
-              <div className="p-3 rounded-lg bg-red-950/40 border border-red-500/30 text-xs text-red-200">
+            {!authConfigured && (
+              <div
+                role="alert"
+                className="p-3.5 rounded-lg bg-amber-950/40 border border-amber-500/40 text-xs text-amber-200 space-y-1"
+              >
+                <p className="font-bold text-amber-300">Configuration Warning</p>
+                <p>
+                  {authError ||
+                    'Admin authentication is not configured on the server. Add the required environment variables in Vercel Project Settings and redeploy.'}
+                </p>
+              </div>
+            )}
+
+            {authConfigured && authError && (
+              <div role="alert" className="p-3 rounded-lg bg-red-950/40 border border-red-500/30 text-xs text-red-200">
                 {authError}
               </div>
             )}

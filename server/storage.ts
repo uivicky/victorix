@@ -30,7 +30,9 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
-const DB_FILE = path.join(ROOT_DIR, 'victorix_db.json');
+const DB_FILE = process.env.VERCEL
+  ? path.join('/tmp', 'victorix_db.json')
+  : path.join(ROOT_DIR, 'victorix_db.json');
 
 export interface QuotaCounters {
   date: string;
@@ -821,7 +823,7 @@ export class StorageManager {
 
   private saveState(data: DbState): void {
     try {
-      this.rolloverQuotasIfNeeded();
+      this.rolloverQuotasIfNeeded(data);
       data.quotas.d1WritesToday += 1;
       fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
     } catch (err) {
@@ -829,10 +831,11 @@ export class StorageManager {
     }
   }
 
-  public rolloverQuotasIfNeeded(): void {
+  public rolloverQuotasIfNeeded(targetState: DbState = this.state): void {
+    if (!targetState || !targetState.quotas) return;
     const today = todayStr();
-    if (this.state.quotas.date !== today) {
-      this.state.quotas = {
+    if (targetState.quotas.date !== today) {
+      targetState.quotas = {
         date: today,
         githubActionsRunsToday: 0,
         workerRequestsToday: 0,
@@ -840,7 +843,7 @@ export class StorageManager {
         d1WritesToday: 0,
         kvReadsToday: 0,
         kvWritesToday: 0,
-        pagesBuildsMonth: this.state.quotas.pagesBuildsMonth || 0,
+        pagesBuildsMonth: targetState.quotas.pagesBuildsMonth || 0,
         geminiRequestsToday: 0,
         pagespeedRequestsToday: 0,
         overpassRequestsToday: 0,
@@ -853,7 +856,7 @@ export class StorageManager {
         arbeitnowRequestsToday: 0,
         customAtsRequestsToday: 0,
       };
-      for (const s of this.state.sourceSyncState) {
+      for (const s of targetState.sourceSyncState || []) {
         if (s.lastResetDate !== today) {
           s.requestsToday = 0;
           s.lastResetDate = today;

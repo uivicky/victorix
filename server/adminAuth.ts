@@ -213,10 +213,13 @@ export function parseCookies(cookieHeader?: string): Record<string, string> {
 }
 
 export function isSecureConnection(req: Request): boolean {
-  if (process.env.NODE_ENV === 'production') return true;
   if (req.secure) return true;
   const proto = String(req.headers['x-forwarded-proto'] || '').toLowerCase();
-  return proto.includes('https');
+  if (proto.includes('https')) return true;
+  const host = String(req.headers.host || '').toLowerCase();
+  const isLocalHost = host.startsWith('localhost') || host.startsWith('127.0.0.1');
+  if (process.env.NODE_ENV === 'production' && !isLocalHost) return true;
+  return false;
 }
 
 export function getSessionCookieOptions(req: Request, maxAgeMs?: number): CookieOptions {
